@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>异步操作</title>
+	<script>
+		/*异步操作介绍*/
+		// let promise = new Promise((resolve,reject)=>{
+		// 	//初始化promise状态为pending
+		// 	console.log('111');
+		// 	//执行异步操作，通常是发送ajax请求，开启定时器
+		// 	setTimeout(()=>{
+		// 		console.log('333');
+		// 		//根据异步任务的返回结果来修改promise的状态
+		// 		//异步任务执行成功
+		// 		resolve('哈哈');//修改Promise的状态为 fullfilled：成功的状态。
+		// 		//reject();//异步执行失败的话，rejected :失败的状态。
+		// 	},2000)
+		// })
+		// console.log('222');
+
+		// promise.then((data)=>{
+		// 	//成功的回调
+		// 	console.log(data,'成功了');
+		// },(data)=>{
+		// 	//失败的回调
+		// 	console.log(data,'失败了');
+		// })
+
+
+		/*异步练习*/
+		//定义获取新闻的功能函数
+		function getNews(url)
+		{
+			let promise=new Promise((resolve,reject)=>{
+				//状态：初始化
+				//执行异步任务
+				//创建xmlHTTP实例对象
+				let xmlHttp=new XMLHttpRequest();
+				//绑定监听 readyState
+				xmlHttp.onreadystatechange=function(){
+					if(xmlHttp.readyState===4){//请求成功
+						if(xmlHttp.status==200){
+							//console.log(xmlHttp.responseText);
+						    resolve(xmlHttp.responseText);//修改promise的状态是成功状态fullfilled
+						}else
+					    {
+						//请求失败
+						    reject('暂时没有新闻内容');
+					    }						
+					}
+				};
+				//open 设置请求的方式以及url
+				xmlHttp.open('GET',url);
+				//发送
+				xmlHttp.send();
+			})
+			return promise;
+		}
+		getNews('https://httpbin.org/get').then((data)=>{
+			console.log(data);
+			let origin=JSON.parse(data).origin;
+			console.log(origin);
+			return getNews('https://httpbin.org/user-agent');
+		},(data)=>{
+			console.log(data);
+		}).then((data)=>{
+			console.log('第二次被调用');
+			console.log(data);
+		},(data)=>{
+			console.log('第二次调用失败');
+		})
+
+	</script>
+</head>
+<body>
+	
+</body>
+</html>
